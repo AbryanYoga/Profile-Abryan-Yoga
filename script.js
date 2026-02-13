@@ -194,47 +194,41 @@ document.addEventListener('DOMContentLoaded', () => {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                // Random explosive velocity
-                this.vx = (Math.random() - 0.5) * 15;
-                this.vy = (Math.random() - 0.5) * 15;
-                this.size = Math.random() * 8 + 4; // Larger chunks
+                // Elegant splash velocity
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10 - 2; // Slight upward bias
+                this.size = Math.random() * 4 + 2; // Smaller, more refined
                 this.color = document.body.getAttribute('data-theme') === 'dark'
                     ? `hsl(${Math.random() * 60 + 200}, 100%, 70%)`
                     : `hsl(${Math.random() * 60 + 10}, 100%, 60%)`;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.005; // Random fade speed
             }
 
             update() {
                 // Apply physics
-                this.vy += gravity;
-                this.vx *= friction;
-                this.vy *= friction;
+                this.vy += 0.2; // Lighter gravity
+                this.vx *= 0.96; // Air resistance
+                this.vy *= 0.96;
 
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Bounce off floor
-                if (this.y + this.size > canvas.height) {
-                    this.y = canvas.height - this.size;
-                    this.vy *= -0.6; // Bounce with energy loss
-                }
+                // Fade out
+                this.alpha -= this.decay;
 
-                // Bounce off walls
-                if (this.x + this.size > canvas.width || this.x - this.size < 0) {
-                    this.vx *= -0.6;
-                }
-
-                // Remove checks (let them pile up or disappear slowly)
-                // For performance, we'll shrink them slowly after they settle
-                if (Math.abs(this.vx) < 0.1 && Math.abs(this.vy) < 0.1 && this.y > canvas.height - 50) {
-                    this.size *= 0.95;
-                }
+                // Remove interaction with walls/floor for a cleaner look
+                // Just let them fade and disappear
             }
 
             draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
+                ctx.restore();
             }
         }
 
@@ -245,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 particles[i].update();
                 particles[i].draw();
 
-                if (particles[i].size <= 0.5) {
+                if (particles[i].alpha <= 0) {
                     particles.splice(i, 1);
                     i--;
                 }

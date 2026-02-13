@@ -382,3 +382,39 @@ body {
         font-size: 1rem;
     }
 }
+
+/* 3D Instruction Text */
+.instruction-text {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 10;
+    text-align: center;
+    background: var(--glass-border);
+    padding: 8px 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--glass-border);
+    animation: bounceText 2s infinite;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@keyframes bounceText {
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
